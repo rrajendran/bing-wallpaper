@@ -1,4 +1,5 @@
 # bing-wallpaper
+[![Build Status](https://travis-ci.org/rrajendran/bing-wallpaper.svg)](https://travis-ci.org/rrajendran/bing-wallpaper)
 Automatic bing wallpaper downloader.
 
 
