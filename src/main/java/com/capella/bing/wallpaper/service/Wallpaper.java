@@ -4,6 +4,7 @@ import com.capella.bing.wallpaper.utils.OsCheck;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.win32.W32APIOptions;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,25 +16,17 @@ public class Wallpaper {
         if (!wallpaperFile.exists()) {
             throw new IllegalArgumentException("Unable to read wallpaper");
         }
+
         OsCheck.OSType ostype = OsCheck.getOperatingSystemType();
         switch (ostype) {
             case Windows:
-                boolean changed = User32.INSTANCE.SystemParametersInfo(0x0014, 0, wallpaperFile.getAbsolutePath(), 1);
-                if (!changed) {
-                    throw new IllegalStateException("Unable to change wallpaper");
-                }
+                new WindowsDesktopChanger().accept(wallpaperFile);
                 break;
             case MacOS:
-                String as[] = {
-                        "osascript",
-                        "-e", "tell application \"Finder\"",
-                        "-e", "set desktop picture to POSIX file \"" + wallpaperFile.getAbsolutePath() + "\"",
-                        "-e", "end tell"
-                };
-                Runtime.getRuntime().exec(as);
+                new MacosxDesktopChanger().accept(wallpaperFile);
                 break;
             case Linux:
-                break;
+                throw new NotImplementedException();
             case Other:
                 break;
         }

@@ -2,7 +2,12 @@ package unit.com.capella.bing.wallpaper.service;
 
 import com.capella.bing.wallpaper.service.BingImageService;
 import com.capella.bing.wallpaper.service.BingImageServiceImpl;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
+
+import java.io.File;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @author Ramesh Rajendran
@@ -12,7 +17,10 @@ public class BingImageServiceImplTest {
 
     @Test
     public void todaysImage() throws Exception {
-        bingImageService.todaysImage("/tmp/bing/new");
+        String downloadLocation = "target/bing";
+        bingImageService.todaysImage(downloadLocation);
+
+        assertThat(new File(downloadLocation).listFiles().length > 0, CoreMatchers.is(true));
     }
 
 }

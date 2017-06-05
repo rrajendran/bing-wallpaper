@@ -1,6 +1,6 @@
 package com.capella.bing.wallpaper;
 
-import com.capella.bing.wallpaper.service.BingImageServiceImpl;
+import com.capella.bing.wallpaper.scheduler.DownloadScheduler;
 
 /**
  * @author Ramesh Rajendran
@@ -8,10 +8,11 @@ import com.capella.bing.wallpaper.service.BingImageServiceImpl;
 public class MainApp {
 
     public static void main(String[] args) throws Exception {
-        String downloadLocation = System.getProperty("user.home") + "/bing-images/";
-        if (args.length > 0) {
-            downloadLocation = args[0];
+        DownloadScheduler schedulerExample = new DownloadScheduler();
+        String cronExpression = "0 0 * * * ?";
+        if (args.length != 0) {
+            cronExpression = args[0];
         }
-        new BingImageServiceImpl().todaysImage(downloadLocation);
+        schedulerExample.downloadTodaysPhoto(cronExpression);
     }
 }
