@@ -15,7 +15,7 @@ import java.util.Map;
         "images",
         "tooltips"
 })
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @Builder
 @NoArgsConstructor

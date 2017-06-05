@@ -17,6 +17,7 @@ import java.util.Map;
         "walle",
         "walls"
 })
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @Builder
 @NoArgsConstructor

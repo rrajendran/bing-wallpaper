@@ -12,7 +12,7 @@ public class BingImageServiceImplTest {
 
     @Test
     public void todaysImage() throws Exception {
-        bingImageService.todaysImage();
+        bingImageService.todaysImage("/tmp/bing/new");
     }
 
 }

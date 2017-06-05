@@ -28,6 +28,7 @@ import java.util.Map;
         "hs"
 })
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

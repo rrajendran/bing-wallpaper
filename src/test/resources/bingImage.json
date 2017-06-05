@@ -1,0 +1,27 @@
+{
+  "images": [
+    {
+      "startdate": "20170604",
+      "fullstartdate": "201706040700",
+      "enddate": "20170605",
+      "url": "/az/hprichbg/rb/BluestripedFangblenny_EN-US10764047906_1920x1080.jpg",
+      "urlbase": "/az/hprichbg/rb/BluestripedFangblenny_EN-US10764047906",
+      "copyright": "Bluestriped fangblenny in the Indian Ocean (© Tobias Friedrich/SuperStock)",
+      "copyrightlink": "http://www.bing.com/search?q=Bluestriped+fangblenny&form=hpcapt&filters=HpDate:%2220170604_0700%22",
+      "quiz": "/search?q=Bing+homepage+quiz&filters=WQOskey:%22HPQuiz_20170604_BluestripedFangblenny%22&FORM=HPQUIZ",
+      "wp": true,
+      "hsh": "41f53230f2c84b5fd957e70b290977a1",
+      "drk": 1,
+      "top": 1,
+      "bot": 1,
+      "hs": []
+    }
+  ],
+  "tooltips": {
+    "loading": "Loading...",
+    "previous": "Previous image",
+    "next": "Next image",
+    "walle": "This image is not available to download as wallpaper.",
+    "walls": "Download this image. Use of this image is restricted to wallpaper only."
+  }
+}

@@ -6,6 +6,7 @@ package com.capella.bing.wallpaper.service;
 public interface BingImageService {
     /**
      * Download today's image
+     * @param downloadLocation
      */
-    void todaysImage() throws Exception;
+    void todaysImage(String downloadLocation) throws Exception;
 }
