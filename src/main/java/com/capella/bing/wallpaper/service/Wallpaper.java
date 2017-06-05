@@ -4,7 +4,6 @@ import com.capella.bing.wallpaper.utils.OsCheck;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.win32.W32APIOptions;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +25,7 @@ public class Wallpaper {
                 new MacosxDesktopChanger().accept(wallpaperFile);
                 break;
             case Linux:
-                throw new NotImplementedException();
+                break;
             case Other:
                 break;
         }
