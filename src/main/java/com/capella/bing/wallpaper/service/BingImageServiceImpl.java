@@ -7,7 +7,6 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.*;
 import java.net.URL;
-import java.util.Locale;
 import java.util.stream.Stream;
 
 /**
@@ -15,17 +14,17 @@ import java.util.stream.Stream;
  */
 public class BingImageServiceImpl implements BingImageService {
     private BingClient bingClient = new BingClient();
+    private String[] locales = new String[]{"en-US", "zh-CN", "ja-JP", "en-AU", "en-UK", "de-DE", "en-NZ"};
 
     @Override
     public void todaysImage(String downloadLocation) throws Exception {
-        Stream.of(Locale.getAvailableLocales()).forEach(locale -> {
+        Stream.of(locales).forEach(locale -> {
             try {
                 download(downloadLocation, locale.toString().replaceAll("_", "-"));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
-
 
     }
 
@@ -34,7 +33,8 @@ public class BingImageServiceImpl implements BingImageService {
 
         photoOfTheDay.getImages().stream().forEach(image -> {
             try {
-                downloadImage("http://www.bing.com" + image.getUrl(), downloadLocation);
+                File savedFile = downloadImage("http://www.bing.com" + image.getUrl(), downloadLocation);
+                Wallpaper.changeDesktopWallpaper(savedFile);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -44,7 +44,7 @@ public class BingImageServiceImpl implements BingImageService {
     }
 
 
-    public static void downloadImage(String sourceUrl, String targetDirectory)
+    public static File downloadImage(String sourceUrl, String targetDirectory)
             throws IOException, InterruptedException {
         System.out.println("Downloading - " + sourceUrl);
         File directory = new File(targetDirectory);
@@ -70,6 +70,6 @@ public class BingImageServiceImpl implements BingImageService {
             imageWriter.close();
         }
 
-        Wallpaper.changeDesktopWallpaper(filePath);
+        return filePath;
     }
 }
