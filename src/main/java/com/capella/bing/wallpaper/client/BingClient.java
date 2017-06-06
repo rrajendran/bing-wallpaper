@@ -14,9 +14,9 @@ import java.io.IOException;
 public class BingClient {
     private final OkHttpClient client = new OkHttpClient();
 
-    public BingImage getPhotoOfTheDay() throws Exception {
+    public BingImage getPhotoOfTheDay(final String locale) throws Exception {
         Request request = new Request.Builder()
-                .url("http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-GB")
+                .url("http://www.bing.com/HPImageArchive.aspx?format=js&idx=1&n=1&mkt=" + locale)
                 .build();
 
         Response response = client.newCall(request).execute();

@@ -7,6 +7,8 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.*;
 import java.net.URL;
+import java.util.Locale;
+import java.util.stream.Stream;
 
 /**
  * @author Ramesh Rajendran
@@ -16,7 +18,19 @@ public class BingImageServiceImpl implements BingImageService {
 
     @Override
     public void todaysImage(String downloadLocation) throws Exception {
-        BingImage photoOfTheDay = bingClient.getPhotoOfTheDay();
+        Stream.of(Locale.getAvailableLocales()).forEach(locale -> {
+            try {
+                download(downloadLocation, locale.toString().replaceAll("_", "-"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+
+    }
+
+    private void download(String downloadLocation, String locale) throws Exception {
+        BingImage photoOfTheDay = bingClient.getPhotoOfTheDay(locale);
 
         photoOfTheDay.getImages().stream().forEach(image -> {
             try {
@@ -27,7 +41,6 @@ public class BingImageServiceImpl implements BingImageService {
                 e.printStackTrace();
             }
         });
-
     }
 
 
