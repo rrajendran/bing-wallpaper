@@ -5,7 +5,12 @@ import com.capella.bing.wallpaper.domain.BingImage;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-import java.io.*;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.stream.Stream;
 
@@ -14,7 +19,7 @@ import java.util.stream.Stream;
  */
 public class BingImageServiceImpl implements BingImageService {
     private BingClient bingClient = new BingClient();
-    private String[] locales = new String[]{"en-US", "zh-CN", "ja-JP", "en-AU", "en-UK", "de-DE", "en-NZ"};
+    private String[] locales = new String[]{"en-UK"};
 
     @Override
     public void todaysImage(String downloadLocation) throws Exception {
@@ -33,7 +38,7 @@ public class BingImageServiceImpl implements BingImageService {
 
         photoOfTheDay.getImages().stream().forEach(image -> {
             try {
-                File savedFile = downloadImage("http://www.bing.com" + image.getUrl(), downloadLocation);
+                File savedFile = downloadImage("http://www.bing.com" + image.getUrl(), downloadLocation, image.getCopyright());
                 Wallpaper.changeDesktopWallpaper(savedFile);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -44,7 +49,7 @@ public class BingImageServiceImpl implements BingImageService {
     }
 
 
-    public static File downloadImage(String sourceUrl, String targetDirectory)
+    public static File downloadImage(String sourceUrl, String targetDirectory, String imageDescription)
             throws IOException, InterruptedException {
         System.out.println("Downloading - " + sourceUrl);
         File directory = new File(targetDirectory);
@@ -55,10 +60,12 @@ public class BingImageServiceImpl implements BingImageService {
         URL imageUrl = new URL(sourceUrl);
         InputStream imageReader = new BufferedInputStream(
                 imageUrl.openStream());
+        BufferedImage bufferedImage = ImageHelper.writeText(imageReader, imageDescription);
+
         File filePath = new File(targetDirectory + File.separator
                 + FilenameUtils.getName(sourceUrl));
-
-        if (!filePath.exists()) {
+        ImageIO.write(bufferedImage, "jpg", filePath);
+       /* if (!filePath.exists()) {
             OutputStream imageWriter = new BufferedOutputStream(
                     new FileOutputStream(filePath));
             int readByte;
@@ -68,7 +75,7 @@ public class BingImageServiceImpl implements BingImageService {
             }
 
             imageWriter.close();
-        }
+        }*/
 
         return filePath;
     }
