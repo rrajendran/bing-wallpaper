@@ -4,28 +4,31 @@ import com.capella.bing.wallpaper.client.BingClient;
 import com.capella.bing.wallpaper.domain.BingImage;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.stream.Stream;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * @author Ramesh Rajendran
  */
 public class BingImageServiceImpl implements BingImageService {
+    public static final Logger LOGGER = getLogger(BingImageServiceImpl.class);
     private BingClient bingClient = new BingClient();
-    private String[] locales = new String[]{"en-UK"};
+    private String[] locales = new String[]{"en-UK", "EN-US", "JA-JP", "ZH-CN", "EN-AU"};
 
     @Override
     public void todaysImage(String downloadLocation) throws Exception {
         Stream.of(locales).forEach(locale -> {
             try {
-                download(downloadLocation, locale.toString().replaceAll("_", "-"));
+                download(downloadLocation + "/" + LocalDate.now().toString(), locale.toString().replaceAll("_", "-"));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -38,8 +41,8 @@ public class BingImageServiceImpl implements BingImageService {
 
         photoOfTheDay.getImages().stream().forEach(image -> {
             try {
-                File savedFile = downloadImage("http://www.bing.com" + image.getUrl(), downloadLocation, image.getCopyright());
-                Wallpaper.changeDesktopWallpaper(savedFile);
+                downloadImage("http://www.bing.com" + image.getUrl(), downloadLocation, image.getCopyright());
+                //Wallpaper.changeDesktopWallpaper(savedFile);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -51,16 +54,15 @@ public class BingImageServiceImpl implements BingImageService {
 
     public static File downloadImage(String sourceUrl, String targetDirectory, String imageDescription)
             throws IOException, InterruptedException {
-        System.out.println("Downloading - " + sourceUrl);
+        LOGGER.info("Downloading - " + sourceUrl);
         File directory = new File(targetDirectory);
         if (!directory.exists()) {
             FileUtils.forceMkdir(directory);
         }
 
         URL imageUrl = new URL(sourceUrl);
-        InputStream imageReader = new BufferedInputStream(
-                imageUrl.openStream());
-        BufferedImage bufferedImage = ImageHelper.writeText(imageReader, imageDescription);
+        //InputStream imageReader = new BufferedInputStream(imageUrl.openStream());
+        BufferedImage bufferedImage = ImageIO.read(imageUrl); //ImageHelper.writeText(imageReader, imageDescription);
 
         File filePath = new File(targetDirectory + File.separator
                 + FilenameUtils.getName(sourceUrl));

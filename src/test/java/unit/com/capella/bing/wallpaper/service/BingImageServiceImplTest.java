@@ -17,7 +17,7 @@ public class BingImageServiceImplTest {
 
     @Test
     public void todaysImage() throws Exception {
-        String downloadLocation = System.getProperty("user.home") + "/bing-images";
+        String downloadLocation = "target";
         bingImageService.todaysImage(downloadLocation);
 
         assertThat(new File(downloadLocation).listFiles().length > 0, CoreMatchers.is(true));

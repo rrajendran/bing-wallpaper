@@ -42,10 +42,10 @@ public class DownloadScheduler {
 
         // Tell quartz to schedule the job using our trigger
         scheduler.scheduleJob(jobDetail, trigger);
-        System.out.println("Bing daily photo started at :" + LocalDateTime.now());
+        LOGGER.info("Bing daily photo started at :" + LocalDateTime.now());
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("Scheduler exited");
+            LOGGER.info("Scheduler exited");
             try {
                 scheduler.shutdown();
             } catch (SchedulerException e) {
