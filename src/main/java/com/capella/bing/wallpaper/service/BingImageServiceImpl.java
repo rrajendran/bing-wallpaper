@@ -2,33 +2,43 @@ package com.capella.bing.wallpaper.service;
 
 import com.capella.bing.wallpaper.client.BingClient;
 import com.capella.bing.wallpaper.domain.BingImage;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.imaging.jpeg.JpegMetadataReader;
+import com.drew.imaging.jpeg.JpegSegmentMetadataReader;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Tag;
+import com.drew.metadata.exif.ExifImageDirectory;
+import com.drew.metadata.exif.ExifReader;
+import com.drew.metadata.iptc.IptcReader;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
+import org.apache.commons.io.IOUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * @author Ramesh Rajendran
  */
 public class BingImageServiceImpl implements BingImageService {
-    public static final Logger LOGGER = getLogger(BingImageServiceImpl.class);
     private BingClient bingClient = new BingClient();
-    private String[] locales = new String[]{"en-UK", "EN-US", "JA-JP", "ZH-CN", "EN-AU"};
+    private String[] locales = new String[]{"en-UK", "en-US", "zh-CN", "en-CA", "en-AU", "de-DE", "fr-FR", "en-NZ"};
 
     @Override
     public void todaysImage(String downloadLocation) throws Exception {
+        String dateFolder = LocalDate.now().minusDays(new Long(0)).toString();
         Stream.of(locales).forEach(locale -> {
             try {
-                download(downloadLocation + "/" + LocalDate.now().toString(), locale.toString().replaceAll("_", "-"));
+                download(downloadLocation + "/" + dateFolder, locale.toString().replaceAll("_", "-"), 1, 0);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -36,49 +46,71 @@ public class BingImageServiceImpl implements BingImageService {
 
     }
 
-    private void download(String downloadLocation, String locale) throws Exception {
-        BingImage photoOfTheDay = bingClient.getPhotoOfTheDay(locale);
+
+    @Override
+    public void archive(Integer daysOld, String downloadLocation) throws Exception {
+        IntStream.range(0, daysOld).forEach(day -> Stream.of(locales).forEach(locale -> {
+            try {
+                String dateFolder = LocalDate.now().minusDays(new Long(day)).toString();
+                download(downloadLocation + "/" + dateFolder,
+                        locale.toString().replaceAll("_", "-"), 1, day);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }));
+
+
+
+    }
+
+    private void download(String downloadLocation, String locale, int count, int index) throws Exception {
+        BingImage photoOfTheDay = bingClient.getPhotoOfTheDay(locale, count, index);
 
         photoOfTheDay.getImages().stream().forEach(image -> {
             try {
-                downloadImage("http://www.bing.com" + image.getUrl(), downloadLocation, image.getCopyright());
+                File savedFile = downloadImage("http://www.bing.com" + image.getUrl(), downloadLocation, image.getCopyright());
                 //Wallpaper.changeDesktopWallpaper(savedFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
     }
 
+    private static void addExif(byte[] bytes) throws ImageProcessingException, IOException {
+        Iterable<JpegSegmentMetadataReader> readers = Arrays.asList(new ExifReader(), new IptcReader());
+        Metadata metadata = JpegMetadataReader.readMetadata(new ByteArrayInputStream(bytes));
+        ExifImageDirectory dir = new ExifImageDirectory();
+
+        metadata.addDirectory(dir);
+        for (Directory directory : metadata.getDirectories()) {
+            for (Tag tag : directory.getTags()) {
+                System.out.println(tag);
+            }
+        }
+    }
+
+
+
 
     public static File downloadImage(String sourceUrl, String targetDirectory, String imageDescription)
-            throws IOException, InterruptedException {
-        LOGGER.info("Downloading - " + sourceUrl);
+            throws IOException, InterruptedException, ImageProcessingException {
+        System.out.println("Downloading - " + sourceUrl);
         File directory = new File(targetDirectory);
         if (!directory.exists()) {
             FileUtils.forceMkdir(directory);
         }
 
         URL imageUrl = new URL(sourceUrl);
-        //InputStream imageReader = new BufferedInputStream(imageUrl.openStream());
-        BufferedImage bufferedImage = ImageIO.read(imageUrl); //ImageHelper.writeText(imageReader, imageDescription);
+        //byte[] bytes = IOUtils.toByteArray(imageUrl);
+        //addExif(bytes);
 
-        File filePath = new File(targetDirectory + File.separator
-                + FilenameUtils.getName(sourceUrl));
+        BufferedImage bufferedImage = ImageIO.read(imageUrl); //ImageHelper.writeText(new ByteArrayInputStream(bytes), imageDescription);
+
+        String pathname = targetDirectory + File.separator + FilenameUtils.getName(sourceUrl);
+        File filePath = new File(pathname);
         ImageIO.write(bufferedImage, "jpg", filePath);
-       /* if (!filePath.exists()) {
-            OutputStream imageWriter = new BufferedOutputStream(
-                    new FileOutputStream(filePath));
-            int readByte;
 
-            while ((readByte = imageReader.read()) != -1) {
-                imageWriter.write(readByte);
-            }
-
-            imageWriter.close();
-        }*/
-
+        //addExifMetaData(filePath,FilenameUtils.getName(pathname));
         return filePath;
     }
 }

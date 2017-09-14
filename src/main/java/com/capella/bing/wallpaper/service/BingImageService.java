@@ -9,4 +9,12 @@ public interface BingImageService {
      * @param downloadLocation
      */
     void todaysImage(String downloadLocation) throws Exception;
+
+    /**
+     *
+     * @param daysOld
+     * @param downloadLocation
+     * @throws Exception
+     */
+    void archive(Integer daysOld, String downloadLocation) throws Exception;
 }

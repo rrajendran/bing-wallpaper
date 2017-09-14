@@ -6,6 +6,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.io.File;
+import java.time.LocalDate;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -17,10 +18,16 @@ public class BingImageServiceImplTest {
 
     @Test
     public void todaysImage() throws Exception {
-        String downloadLocation = "target";
+        String downloadLocation = System.getProperty("user.home") + "/bing-images/";
         bingImageService.todaysImage(downloadLocation);
 
         assertThat(new File(downloadLocation).listFiles().length > 0, CoreMatchers.is(true));
+    }
+
+
+    @Test
+    public void testArchive() throws Exception {
+        bingImageService.archive(10, System.getProperty("user.home") + "/bing-images/");
     }
 
 }

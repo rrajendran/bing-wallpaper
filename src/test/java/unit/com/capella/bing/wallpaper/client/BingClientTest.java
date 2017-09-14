@@ -17,7 +17,7 @@ public class BingClientTest {
     @Test
     public void getPhotoOfTheDay() throws Exception {
 
-        BingImage photoOfTheDay = client.getPhotoOfTheDay("en-GB");
+        BingImage photoOfTheDay = client.getPhotoOfTheDay("en-GB", 1, 0);
 
         assertThat(photoOfTheDay, is(notNullValue()));
         System.out.println(photoOfTheDay.getImages().get(0).getUrl());
