@@ -1,8 +1,22 @@
 package com.capella.bing.wallpaper.service;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+
 import com.capella.bing.wallpaper.client.BingClient;
 import com.capella.bing.wallpaper.domain.BingImage;
-import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegSegmentMetadataReader;
@@ -12,19 +26,6 @@ import com.drew.metadata.Tag;
 import com.drew.metadata.exif.ExifImageDirectory;
 import com.drew.metadata.exif.ExifReader;
 import com.drew.metadata.iptc.IptcReader;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * @author Ramesh Rajendran
@@ -107,7 +108,10 @@ public class BingImageServiceImpl implements BingImageService {
         BufferedImage bufferedImage = ImageIO.read(imageUrl); //ImageHelper.writeText(new ByteArrayInputStream(bytes), imageDescription);
 
         String pathname = targetDirectory + File.separator + FilenameUtils.getName(sourceUrl);
+        System.out.println("Saving at " + pathname);
         File filePath = new File(pathname);
+        filePath.mkdirs();
+
         ImageIO.write(bufferedImage, "jpg", filePath);
 
         //addExifMetaData(filePath,FilenameUtils.getName(pathname));
